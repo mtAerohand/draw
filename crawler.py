@@ -3,6 +3,7 @@ import threading
 import time
 
 import requests
+import logging
 from bs4 import BeautifulSoup
 from tinydb import TinyDB, Query
 
@@ -10,11 +11,19 @@ from tinydb import TinyDB, Query
 db = TinyDB("cards.json")
 query = Query()
 
+# ログ設定
+logging.basicConfig(
+    filename = "draw.log",
+    filemode = "a",
+    format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level = logging.INFO
+)
+logger = logging.getLogger(__name__)
+
 # ----- constants -----
 
 # GETリクエストの間隔(s)
-GET_INTERVAL_SECONDS = 1
-# GET_INTERVAL_SECONDS = 600
+GET_INTERVAL_SECONDS = 600
 # 1ページごとのカードの取得件数
 GET_SIZE = 100
 #遊戯王データベースのベースURL
@@ -34,6 +43,7 @@ def get_cards(page):
 
   # 指定ページ、GET_SIZE件の条件で取得をかける
   print(f"Request send. Page : {page}")
+  logger.info(f"Request send. Page : {page}")
   response = requests.get(url)
 
   if response is None:
@@ -63,8 +73,10 @@ def get_cards(page):
       id = re.search(r"cid=(\d+)", link).group(1)
       # IDをキーとしてdbにレコードを保存
       card["id"] = id
+      db.remove(query.id == id)
       db.insert(card)
       saved_card = db.search(query.id == id)
+      logger.info(f"Saved Data : {saved_card}")
       print(f"Saved Data : {saved_card}")
 
       record_num += 1
@@ -83,6 +95,7 @@ def run():
         record_num = get_cards(page)
       except requests.exceptions.RequestException:
         print(f"Request failed. Page : {page}")
+        logger.ERROR(f"Request failed. Page : {page}")
       except Exception as e:
         print(e)
       # cardsのサイズがGET_SIZE未満の場合、pageを0にリセットする
