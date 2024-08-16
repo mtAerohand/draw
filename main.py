@@ -1,6 +1,3 @@
-# This code is based on the following example:
-# https://discordpy.readthedocs.io/en/stable/quickstart.html#a-minimal-bot
-
 import os
 
 import discord
@@ -23,18 +20,18 @@ db = TinyDB("cards.json")
 
 @client.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
+    print("We have logged in as {0.user}".format(client))
     await tree.sync()
 
 
 @tree.command(name="draw", description="Draw a card randomly.")
-async def draw(interaction: discord.Interaction, type: str=""):
+async def draw(interaction: discord.Interaction, type: str = ""):
     await interaction.response.defer()
-    
+
     # DB検索用オブジェクト
     query = Query()
     # 返却するURL
-    url = ""
+    url = "データがありません。"
 
     # ランダムチョイスの元となるカードリスト
     cards = []
@@ -56,12 +53,9 @@ try:
     client.run(token)
 except discord.HTTPException as e:
     if e.status == 429:
-        print(
-            "The Discord servers denied the connection for making too many requests"
-        )
+        print("The Discord servers denied the connection for making too many requests")
         print(
             "Get help from https://stackoverflow.com/questions/66724687/in-discord-py-how-to-solve-the-error-for-toomanyrequests"
         )
     else:
         raise e
-
