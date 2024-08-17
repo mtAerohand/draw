@@ -52,5 +52,6 @@ try:
         raise Exception("Please add your token to the Secrets pane.")
     client.run(token)
 except Exception as e:
-    crawler.send_pushbullet_notification("【Draw!!】エラー", e.text)
+    crawler.send_pushbullet_notification("【Draw!!】エラー", str(e))
     raise e
+
