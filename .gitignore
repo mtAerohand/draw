@@ -1,5 +1,8 @@
+# files
 cards.json
 cards_sub.json
 draw.log
+README.md
 
+# folders
 /__pycache__/

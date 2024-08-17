@@ -169,6 +169,12 @@ def commit_check():
         print("Commit canceled.")
 
 
+# サブDBをメインDBにコミットする関数
+def commit():
+    db.truncate()
+    db.insert_multiple(db_sub.all())
+
+
 # Pushbulletに通知を送る関数
 def send_pushbullet_notification(title, body):
     # Pushbullet APIトークン
@@ -184,9 +190,3 @@ def send_pushbullet_notification(title, body):
         print("Notification sent.")
     else:
         print("Failed to sent notification.")
-
-
-# サブDBをメインDBにコミットする関数
-def commit():
-    db.truncate()
-    db.insert_multiple(db_sub.all())
