@@ -1,3 +1,4 @@
+import logging.handlers
 import re
 import threading
 import time
@@ -23,6 +24,10 @@ logging.basicConfig(
     level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
+handler = logging.handlers.TimedRotatingFileHandler(
+    "draw.log", when="midnight", interval=1, backupCount=3
+)
+logger.addHandler(handler)
 
 # ----- constants -----
 
