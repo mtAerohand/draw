@@ -2,14 +2,12 @@ import logging.handlers
 import re
 import threading
 import time
-import os
-
 import requests
 import logging
 from bs4 import BeautifulSoup
 from tinydb import TinyDB, Query
 
-from pushbullet import Pushbullet
+import util
 
 # DBの読み込み
 db = TinyDB("cards.json")
@@ -164,7 +162,7 @@ def commit_check():
     size_sub = len(db_sub.all())
     if size_sub != 0 and size != size_sub:
         body = TOTAL_CHANGED.format(size=size, size_sub=size_sub)
-        send_pushbullet_notification(TITLE, body)
+        util.send_pushbullet_notification(TITLE, body)
         confirm(body)
 
     if commit_enabled:
@@ -178,20 +176,3 @@ def commit_check():
 def commit():
     db.truncate()
     db.insert_multiple(db_sub.all())
-
-
-# Pushbulletに通知を送る関数
-def send_pushbullet_notification(title, body):
-    # Pushbullet APIトークン
-    api_key = os.getenv("PUSHBULLET_KEY")
-
-    # Pushbulletに接続
-    pb = Pushbullet(api_key)
-
-    # 通知を送信
-    push = pb.push_note(title, body)
-
-    if push:
-        print("Notification sent.")
-    else:
-        print("Failed to sent notification.")
